@@ -1,0 +1,15 @@
+[flake8]
+exclude =
+    .git,
+    __pycache__,
+    */migrations/,
+    ./venv/
+per-file-ignores =
+    # line too long
+    */settings.py:E501
+    # no new line at end of file
+    __init__.py:W292
+# Set the maximum length that any line may be
+max-line-length = 100
+# Set the maximum allowed McCabe cyclomatic complexity value
+max-complexity = 10
