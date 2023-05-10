@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -8,6 +9,15 @@ from .models import FriendRequest, FriendShip
 from .serializers import FriendsRequestSerializer, FriendsSerializer
 
 
+@swagger_auto_schema(
+    method='get',
+    responses={200: FriendsRequestSerializer(many=True)},
+)
+@swagger_auto_schema(
+    method='post',
+    request_body=FriendsRequestSerializer(),
+    responses={201: FriendsRequestSerializer()},
+)
 @api_view(['GET', 'POST'])
 def get_create_requests_view(request):
     """
