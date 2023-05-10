@@ -4,11 +4,23 @@ exclude =
     __pycache__,
     */migrations/,
     ./venv/
+extend-ignore =
+    # Missing docstring in public module
+    D100
+    # Missing docstring in public package
+    D104
+    # Missing docstring in magic method
+    D105
+    # Missing docstring in public nested class
+    D106
 per-file-ignores =
     # line too long
     */settings.py:E501
     # no new line at end of file
     __init__.py:W292
+    test_*.py:D100, D103
+    conftest.py:D100, D103
+    apps.py:D101
 # Set the maximum length that any line may be
 max-line-length = 100
 # Set the maximum allowed McCabe cyclomatic complexity value
