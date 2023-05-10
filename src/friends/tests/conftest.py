@@ -27,6 +27,14 @@ def user2():
 
 
 @pytest.fixture
+def user3():
+    return get_user_model().objects.create_user(
+        'user3',
+        'password'
+    )
+
+
+@pytest.fixture
 def request_from_user1_to_user2(user1, user2):
     return FriendRequest.objects.create(
         from_user=user1,

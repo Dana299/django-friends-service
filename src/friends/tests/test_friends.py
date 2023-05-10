@@ -20,6 +20,13 @@ def test_delete_friend(client, user1, user2, friendship):
 
 
 @pytest.mark.django_db
+def test_delete_nonexistent_friend(client, user1, user3, friendship):
+    client.force_login(user1)
+    response = client.delete(f'/api/friends/{user3.username}')
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
 def test_get_relations_status_friends(client, user1, user2, friendship):
     client.force_login(user1)
     response = client.get(f'/api/friends/status/{user2.username}')

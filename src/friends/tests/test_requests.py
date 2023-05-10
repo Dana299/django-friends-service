@@ -22,15 +22,22 @@ def test_get_outgoing_requests(client, user1, user2, request_from_user1_to_user2
 
 
 @pytest.mark.django_db
-def test_send_request_to_user(client, user1, user2):
+@pytest.mark.parametrize(
+    "to_user, status_code, message",
+    [
+        ("user2", 201, "Make sure that 201 is returned when making request to existent user"),
+        ("user3", 404, "Make sure that 404 is returned when making request to nonexistent user"),
+    ]
+)
+def test_send_request_to_user(client, user1, user2, to_user, status_code, message):
     client.force_login(user1)
-    body = {"to_user": "user2"}
+    body = {"to_user": to_user}
     response = client.post(
         "/api/requests/",
         data=body,
         format="json"
     )
-    assert response.status_code == 201
+    assert response.status_code == status_code, message
 
 
 @pytest.mark.django_db
@@ -65,3 +72,12 @@ def test_decline_friends_request(client, user1, user2, request_from_user2_to_use
     response = client.delete(f'/api/requests/{user2.username}')
     assert response.status_code == 204
     assert not FriendRequest.objects.filter(from_user=user2, to_user=user1).exists()
+
+
+@pytest.mark.django_db
+def test_decline_nonexistent_request(client, user1, user3, request_from_user2_to_user1):
+    client.force_login(user1)
+    response = client.delete(f'/api/requests/{user3.username}')
+    assert response.status_code == 404, ("Make sure that 404 is returned"
+                                         "when making delete request for"
+                                         "nonexisting friends request")
