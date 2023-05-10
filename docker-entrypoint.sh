@@ -3,7 +3,8 @@
 sleep 10
 
 # Apply database migrations
-echo "Apply database migrations"
+echo "Make and apply database migrations"
+python manage.py makemigrations
 python manage.py migrate
 
 # Creating superuser
