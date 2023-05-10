@@ -85,16 +85,6 @@ def approve_or_decline_friends_request_view(request, username):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['POST'])
-def send_friends_request(request):
-    """ View for sending request for friendship with another user. """
-
-    serializer = FriendsRequestSerializer(request.data)
-    serializer.is_valid(raise_exception=True)
-    serializer.save()
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
 @api_view(['GET'])
 def get_friends_view(request):
     """Return a list of friends for the authenticated user."""
