@@ -81,3 +81,19 @@ def test_decline_nonexistent_request(client, user1, user3, request_from_user2_to
     assert response.status_code == 404, ("Make sure that 404 is returned"
                                          "when making delete request for"
                                          "nonexisting friends request")
+
+
+@pytest.mark.django_db
+def test_repeated_request_to_the_same_user(client, user1, user2, request_from_user1_to_user2):
+    client.force_login(user1)
+    body = {"to_user": user2.username}
+    response = client.post(
+        "/api/requests/",
+        data=body,
+        format="json"
+    )
+    assert response.status_code == 400
+    assert FriendRequest.objects.filter(
+        from_user=user1,
+        to_user=user2
+    ).count() == 1
