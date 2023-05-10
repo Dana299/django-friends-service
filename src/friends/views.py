@@ -48,6 +48,16 @@ def get_create_requests_view(request):
             get_user_model(),
             username=request.data.get('to_user'),
         )
+        existing_request = FriendRequest.objects.filter(
+            from_user=from_user,
+            to_user=to_user
+        )
+        if existing_request.exists():
+            return Response(
+                {'Error': 'Request to this user has already been sent.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         mutual_request = FriendRequest.objects.filter(
             from_user=to_user,
             to_user=from_user,
