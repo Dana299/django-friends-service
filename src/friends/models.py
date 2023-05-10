@@ -3,7 +3,7 @@ from django.db import models
 
 
 class FriendRequest(models.Model):
-    """ Model representing friend requests. """
+    """Model representing friend requests."""
 
     from_user = models.ForeignKey(
         to=get_user_model(),
@@ -30,7 +30,7 @@ class FriendRequest(models.Model):
 
 
 class FriendShip(models.Model):
-    """ Model representing friendship between two users. """
+    """Model representing friendship between two users."""
 
     user = models.ForeignKey(
         to=get_user_model(),

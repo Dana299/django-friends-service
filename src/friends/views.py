@@ -12,8 +12,10 @@ from .serializers import FriendsRequestSerializer, FriendsSerializer
 def get_create_requests_view(request):
     """
     View for returning user friends requests and approving incoming request.
+
     :queryparam section: Specifies the type of friend requests to be returned.
-        Allowed values:
+
+    Allowed values:
         `in` - for incoming friend requests,
         `out` - for outcoming friend requests
     """
@@ -61,8 +63,7 @@ def get_create_requests_view(request):
 
 @api_view(['POST', 'DELETE'])
 def approve_or_decline_friends_request_view(request, username):
-    """ View for approving or declining friendship request. """
-
+    """View for approving or declining friendship request from user."""
     from_user = get_object_or_404(
         get_user_model(), username=username
     )
@@ -96,6 +97,7 @@ def send_friends_request(request):
 
 @api_view(['GET'])
 def get_friends_view(request):
+    """Return a list of friends for the authenticated user."""
     user_friends = FriendShip.objects.filter(
         user=request.user
     ).select_related("friend")
@@ -105,10 +107,7 @@ def get_friends_view(request):
 
 @api_view(['DELETE'])
 def delete_friend_view(request, username):
-    """
-    Deletes the friendship with the user with the given username.
-    """
-
+    """View for deleting the friendship with the user with the given username."""
     friendship_record = get_object_or_404(
         FriendShip,
         user=request.user,
@@ -124,11 +123,7 @@ def delete_friend_view(request, username):
 
 @api_view(['GET'])
 def get_relationship_status_view(request, username):
-    """
-    Returns the relationship status between the current user
-    and the user with the given username.
-    """
-
+    """Return the relationship status between current user and the given user."""
     with_user = get_object_or_404(
         get_user_model(), username=username,
     )
