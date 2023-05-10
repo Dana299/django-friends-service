@@ -8,22 +8,55 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_NAME: test_db
+      DATABASE_USERNAME: test
+      DATABASE_USER_PASSWORD: test
+      DATABASE_PORT: 5432
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: ${{ env.DATABASE_NAME }}
+          POSTGRES_USER: ${{ env.DATABASE_USERNAME }}
+          POSTGRES_PASSWORD: ${{ env.DATABASE_USER_PASSWORD }}
+        ports:
+          - 5432:5432
+        options:
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install flake8 flake8-docstrings pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          cd src/
+
       - name: Lint with flake8
         run: |
           python -m flake8
+
+      - name: Run migrations
+        working-directory: ./src
+        run: |
+          python manage.py makemigrations
+          python manage.py migrate
+
       - name: Test with pytest
+        env:
+          POSTGRES_HOST: postgres
+          POSTGRES_DB: ${{ env.DATABASE_NAME }}
+          POSTGRES_USER: ${{ env.DATABASE_USERNAME }}
+          POSTGRES_PASSWORD: ${{ env.DATABASE_USER_PASSWORD }}
+          POSTGRES_PORT: ${{ env.DATABASE_PORT }}
+        working-directory: ./src
         run: |
           pytest
 
