@@ -10,8 +10,10 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt --no-cache-dir
 
 COPY docker-entrypoint.sh .
-
 COPY src .
+EXPOSE 8080
+
+
 RUN chmod +x docker-entrypoint.sh
 ENTRYPOINT [ "./docker-entrypoint.sh" ]
 

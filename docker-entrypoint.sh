@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sleep 10
+sleep 3
 
 # Apply database migrations
 echo "Make and apply database migrations"
@@ -19,4 +19,4 @@ fi
 
 # Start server
 echo "Starting server"
-python manage.py runserver 0.0.0.0:8000
+python manage.py runserver 0.0.0.0:8080
