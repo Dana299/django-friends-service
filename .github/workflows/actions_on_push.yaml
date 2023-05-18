@@ -2,6 +2,7 @@ name: Test and Lint
 
 on:
   push:
+  pull_request:
     branches: [ main ]
 
 jobs:
@@ -9,27 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DATABASE_NAME: test_db
-      DATABASE_USERNAME: test
-      DATABASE_USER_PASSWORD: test
-      DATABASE_PORT: 5432
+      POSTGRES_DB: test_db
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: localhost
 
     services:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_DB: ${{ env.DATABASE_NAME }}
-          POSTGRES_USER: ${{ env.DATABASE_USERNAME }}
-          POSTGRES_PASSWORD: ${{ env.DATABASE_USER_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         ports:
           - 5432:5432
         options:
           --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v3
+      - name: checkout
+        uses: actions/checkout@v3
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v3
         with:
           python-version: "3.10"
 
@@ -39,23 +43,23 @@ jobs:
           pip install flake8 flake8-docstrings pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Lint with flake8
-        run: |
-          python -m flake8
-
       - name: Run migrations
         working-directory: ./src
         run: |
           python manage.py makemigrations
           python manage.py migrate
 
+      - name: Lint with flake8
+        run: |
+          python -m flake8
+
       - name: Test with pytest
         env:
-          POSTGRES_HOST: postgres
-          POSTGRES_DB: ${{ env.DATABASE_NAME }}
-          POSTGRES_USER: ${{ env.DATABASE_USERNAME }}
-          POSTGRES_PASSWORD: ${{ env.DATABASE_USER_PASSWORD }}
-          POSTGRES_PORT: ${{ env.DATABASE_PORT }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_HOST: ${{ env.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ env.POSTGRES_PORT }}
         working-directory: ./src
         run: |
           pytest
